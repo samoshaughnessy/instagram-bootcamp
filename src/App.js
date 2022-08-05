@@ -1,8 +1,9 @@
 import React from "react";
 import { onChildAdded, push, ref, set } from "firebase/database";
-import { database } from "./firebase";
+import { database } from "./Db/firebase";
 import logo from "./logo.png";
 import "./App.css";
+import ImageUpload from "./Components/ImageUpload";
 
 // Save the Firebase message folder name as a constant to avoid bugs due to misspelling
 const MESSAGE_FOLDER_NAME = "messages";
@@ -14,6 +15,7 @@ class App extends React.Component {
     // When Firebase changes, update local state, which will update local UI
     this.state = {
       messages: [],
+      message: "",
     };
   }
 
@@ -33,14 +35,26 @@ class App extends React.Component {
   writeData = () => {
     const messageListRef = ref(database, MESSAGE_FOLDER_NAME);
     const newMessageRef = push(messageListRef);
-    set(newMessageRef, "abc");
+    let message = {
+      message: this.state.message,
+      time: new Date(),
+    };
+    set(newMessageRef, JSON.stringify(message));
+    this.setState({ message: "" });
   };
 
   render() {
     // Convert messages in state to message JSX elements to render
-    let messageListItems = this.state.messages.map((message) => (
-      <li key={message.key}>{message.val}</li>
-    ));
+
+    // let messageListItems = this.state.messages.map((message) => {
+    //   // let parsed = JSON.parse(message.val);
+
+    //   return (
+    //     <li key={message.key}>
+    //       {new Date(parsed.time).toLocaleTimeString()} - {parsed.message}{" "}
+    //     </li>
+    //   );
+    // });
     return (
       <div className="App">
         <header className="App-header">
@@ -48,9 +62,16 @@ class App extends React.Component {
           <p>
             Edit <code>src/App.js</code> and save to reload.
           </p>
+          {/* <input
+            value={this.state.message}
+            type="text"
+            placeholder="New Message here"
+            onChange={(e) => this.setState({ message: e.target.value })}
+          /> */}
           {/* TODO: Add input field and add text input as messages in Firebase */}
-          <button onClick={this.writeData}>Send</button>
-          <ol>{messageListItems}</ol>
+          {/* <button onClick={this.writeData}>Send</button>
+          <ol>{messageListItems}</ol> */}
+          <ImageUpload />
         </header>
       </div>
     );
